@@ -1,6 +1,5 @@
 
 #include "packetSerial.h"
-#include <MGLib.h>
 
 /*
  Packet and field delimiting characters

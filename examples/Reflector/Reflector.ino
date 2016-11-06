@@ -24,12 +24,12 @@ void setup()  {
 int loopCount = 0;
 
 void loop() {
-    String rxData;
+    char buffer[256];
     
-    bool rc = m_packetSerial->getData(&rxData);
+    bool rc = m_packetSerial->getData(buffer, sizeof(buffer));
         
     if (rc) {
-       m_packetSerial->sendData(rxData);                
+       m_packetSerial->sendData(buffer);                 
     }
         
     delay(1);
