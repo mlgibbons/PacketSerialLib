@@ -3,7 +3,8 @@
  *
  * Test script for the PacketSerial library 
  * which allows one to send and receive data in packets over 
- * streams.
+ * streams. If data is not correctly encoded into a packet
+ * the library will drop it transparently.
  ************************************************************/
 
 #include "packetSerial.h"
