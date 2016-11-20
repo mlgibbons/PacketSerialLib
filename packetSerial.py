@@ -82,8 +82,27 @@ class PacketSerial:
 
         logDebug("Sending: %s" % packet)
 
-        self.serial.write( packet)
-        self.serial.flush()
+        # The Arduino only has a serial ring buffer of 64 bytes
+        # When sending large packets of data this can result in dropped 
+        # characters so here we limit the size of the chunks we send
+        # and add a small gap in between them to work around this limitation
+
+        MAX_CHUNK_SIZE = 48
+        INTER_CHUNK_DELAY = 0.5
+
+        if (len(packet)<=MAX_CHUNK_SIZE): 
+            self.serial.write(packet)
+            self.serial.flush()
+        else:
+            def chunks(l, n):
+                n = max(1, n)
+                return (l[i:i+n] for i in xrange(0, len(l), n))
+
+            for chunk in chunks(packet, MAX_CHUNK_SIZE):
+                self.serial.write(chunk)
+                print chunk
+                self.serial.flush()
+                sleep(INTER_CHUNK_DELAY)
                                         
     def getData( self ):            
         '''
