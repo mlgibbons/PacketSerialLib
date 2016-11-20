@@ -88,7 +88,7 @@ class PacketSerial:
         # and add a small gap in between them to work around this limitation
 
         MAX_CHUNK_SIZE = 48
-        INTER_CHUNK_DELAY = 0.5
+        INTER_CHUNK_DELAY = 0.2
 
         if (len(packet)<=MAX_CHUNK_SIZE): 
             self.serial.write(packet)
@@ -100,7 +100,6 @@ class PacketSerial:
 
             for chunk in chunks(packet, MAX_CHUNK_SIZE):
                 self.serial.write(chunk)
-                print chunk
                 self.serial.flush()
                 sleep(INTER_CHUNK_DELAY)
                                         
