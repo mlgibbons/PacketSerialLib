@@ -10,7 +10,10 @@
 #define FSEP ','
 
 #ifdef DEBUG
-#define LOG_DEBUG(M) Logger.logDebug(M);
+void log(const char* msg) {
+    // insert your code here to send log msg to somewhere
+}
+#define LOG_DEBUG(M) log(M);
 #else
 #define LOG_DEBUG(M) 
 #endif
@@ -18,7 +21,7 @@
 /************************************************
  * Returns true if character is numeric
  ************************************************/
-bool isNumChar(char aChar)
+bool isNumChar(const char aChar)
 {
     char numChars[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}; 
 
@@ -35,7 +38,7 @@ bool isNumChar(char aChar)
  * Pass in a Stream pointer over which packets
  * will be sent and received
  *************************************************/
-PacketSerial::PacketSerial(Stream* serial, int reserveBufferSize)
+PacketSerial::PacketSerial(Stream* serial, const int reserveBufferSize)
 {
   m_serial = serial;
   
@@ -65,7 +68,7 @@ void PacketSerial::sendData(const char* data)
 /*************************************************
  * Get data received in the last packet
  *************************************************/    
-bool PacketSerial::getData(char* buffer, int bufferlen)
+bool PacketSerial::getData(char* buffer, const int bufferlen)
 {
   if (m_dataAvailable==true) {
       // copy received data into output buffer truncating if needed
@@ -95,7 +98,6 @@ void PacketSerial::resetToStartState()
     
     m_receiveDataLen = 0;        
     m_receiveData = "";        
-    m_receiveCRC = 0;        
 }
 
 /**************************************************
@@ -187,12 +189,12 @@ void PacketSerial::processIncoming()
           if (rxChar==ETX) {              
               LOG_DEBUG(String(F("RX_STATE_READING_CRC: ETX found")).c_str())
 
-              m_receiveCRC = m_receiveBuffer.toInt();
+              int receiveCRC = m_receiveBuffer.toInt();
               m_receiveBuffer = "";
 
-              LOG_DEBUG((String(F("RX_STATE_READING_CRC CRC = ")) + String(m_receiveCRC)).c_str())
+              LOG_DEBUG((String(F("RX_STATE_READING_CRC CRC = ")) + String(receiveCRC)).c_str())
               
-              if ( checkCRC(m_receiveData.c_str(), m_receiveCRC) == true) {
+              if ( checkCRC(m_receiveData.c_str(), receiveCRC) == true) {
                   m_data = m_receiveData;
                   m_dataAvailable = true;
                   resetToStartState();
@@ -235,10 +237,11 @@ bool PacketSerial::getNextChar(char* cBuffer)
 
 int PacketSerial::calcCRC(const char* data )
 {
+  // Override this method to implement your CRC mechanism
   return 0;
 }
 
-bool PacketSerial::checkCRC(const char* content, int crc ) 
+bool PacketSerial::checkCRC(const char* content, const int crc ) 
 {
     int calcedCRC = calcCRC( content );
     

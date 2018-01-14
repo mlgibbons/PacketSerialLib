@@ -55,8 +55,7 @@ class PacketSerial:
         
         self.receiveDataLen     = None        
         self.receiveData        = None        
-        self.receiveCRC         = None        
-
+        
     def sendData( self, data ):
         '''
         '''
@@ -198,10 +197,10 @@ class PacketSerial:
                     # until we hit ETX
                     elif (rxChar==self.ETX):
 
-                        self.receiveCRC = int(self.receiveBuffer)
+                        receiveCRC = int(self.receiveBuffer)
                         self.receiveBuffer = ""
 
-                        if ( self.checkCRC(self.receiveData, self.receiveCRC) == True):
+                        if ( self.checkCRC(self.receiveData, receiveCRC) == True):
                             self.data = self.receiveData
                             self.dataAvailable = True
                             self.resetToStartState()
@@ -230,7 +229,7 @@ class PacketSerial:
         return rc
 
     def calcCRC( self, content ):
-        #crc = binascii.crc32( str( content) ) & 0xffffffff
+        # Override this to implement your CRC mechanism
         return 0
 
     def checkCRC( self, content, crc ):
@@ -247,33 +246,51 @@ import sys
 
 def run():
     '''
-    Reads packets from the serial port and prints to console
-    Reads lines from console and sends to serial port as a packet
+    Send a packet every N seconds 
+    Receives packets and prints to console
+    Note that ps.getData() must be called repeatedly as it pulls individual characters from the 
+    incoming stream and executes the FSM. Once a packet has been received ps.getData() will return the data
+    but until then it will return None
     '''
 
-    portName = 'COM5'
+    if (len(sys.argv)!=2):
+        print "Error: comPortNumber missing"
+        print "Usage: packetSerial.py <comPort>"
+        print "       e.g. packetSerial.py COM4" 
+        return 1
+        
+    portName = sys.argv[1]
     print 'Using port %s' % portName
 
     serialPort = serial.Serial( portName, 57600 )
     ps = PacketSerial(serialPort)
 
+    # Send a packet every 2 seconds
+    payloadCount = 0
+    loopCount = 0
+    sendPeriodInSecs = 2
+    loopDelayInSecs = 0.01
+    countPerSendPeriod= sendPeriodInSecs / loopDelayInSecs
+    
     while (True):
 
-        # Get some data and send it
-
-        print "Enter some data to send and press return"
-        input = sys.stdin.readline()
-        input = input[:len(input)-1]     # strip CR/NL
-        ps.sendData(input)
-
-        # Read all of the packets received and display
-
+        loopCount+=1
+        
+        if ((loopCount % countPerSendPeriod)==0):
+            payload = "Hello %s" % payloadCount
+            print "TX Packet [%s]" % payload
+            ps.sendData(payload)
+            loopCount=0
+            payloadCount += 1
+    
+        # Call FSM to process incoming chars and see if a packet has been received
         rxData = ps.getData()
+        
         while (rxData is not None):
-            print "Packet received; data = [%s]" % rxData
+            print "RX Packet [%s]" % rxData
             rxData = ps.getData()
-
-    sleep(0.01)
+            
+        sleep(loopDelayInSecs)
 
 if __name__ == '__main__':
     #LOG_DEBUG=True

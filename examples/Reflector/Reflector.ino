@@ -5,6 +5,7 @@
  * which allows one to send and receive data in packets over 
  * streams. If data is not correctly encoded into a packet
  * the library will drop it transparently.
+ *
  ************************************************************/
 
 #include "packetSerial.h"
@@ -17,9 +18,6 @@ void setup()  {
   
   // now wrap it in the packetising wrapper class
   m_packetSerial = new PacketSerial(&Serial);              
-  
-  m_packetSerial->sendData("Hello from Arduino");
-  m_packetSerial->sendData("I'll reflect any packets you send back to you");
 }
 
 int loopCount = 0;
@@ -27,8 +25,10 @@ int loopCount = 0;
 void loop() {
     char buffer[256];
     
+    // see if a packet has been received
     bool rc = m_packetSerial->getData(buffer, sizeof(buffer));
         
+    // if packet received then send the payload back
     if (rc) {
        m_packetSerial->sendData(buffer);                 
     }
