@@ -72,7 +72,8 @@ Packet structure is:
     DATALEN             Payload                     e.g. "Hello"
     FSEP                Field seperator             ','
     CRC                 CRC                         e.g. "0"
-
+    ETX                 Packet end character        '>'
+    
 A typical packet would look like:
 
     <5,Hello,0>
