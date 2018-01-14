@@ -6,7 +6,7 @@ PacketSerialLib
 A simple C and Python library for sending and receiving packets of data between an Arduino and a PC.
 
 The transfer of data to and from the Arduino is non-blocking. There is no limitation on the contents 
-of the data. The data is transferred in a robust fashion and recoverable fashion (using packets) which 
+of the data. The data is transferred in a robust and recoverable fashion (using packets) which 
 is a key requirement for many applications.
 
 A lot of sketches and code uses simple readline() calls but this has a number of limitations both for Arduino and clients.
@@ -29,14 +29,14 @@ To receive packets the application code simply calls the getData() function (whi
 allowing the code to process other events while waiting for packets to be received.
 
 As the payload data is wrapped in a packet so there is no limitation to the contents of the data 
-e.g. "\n" can be in the payload as well as the start and end characters for the packet.
+e.g. "\n" can be in the payload as well as the start and end characters used for identifying the packet boundaries.
 
-Only the data from well formed received packets are passed to the receiving client code.
+Only the data from well formed packets is passed to the receiving client code.
 Any data which cannot be parsed into a well formed packet is dropped silently.
 
 For additional safety CRC generation and checking for the data is supported. 
 The default CRC generation simply returns "0" and so CRC checking is effectively disabled.
-Just overide the calcCRC() method to use whatever CRC mechanism you require.
+Just override the calcCRC() method to use whatever CRC mechanism you require.
 
 ## Getting Started
 Burn to the Reflector sketch in the examples folder onto the Arduino. This simple receives packets from the 
