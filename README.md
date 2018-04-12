@@ -39,7 +39,7 @@ The default CRC generation simply returns "0" and so CRC checking is effectively
 Just override the calcCRC() method to use whatever CRC mechanism you require.
 
 ## Getting Started
-Burn to the Reflector sketch in the examples folder onto the Arduino. This simple receives packets from the 
+Burn the Reflector sketch in the examples folder onto the Arduino. This simple receives packets from the 
 host and then sends them back as well as periodically sending keep-alive packets.
 
 Run the host test program passing in the com port for the Arduino i.e. python packetSerial.py COM4
